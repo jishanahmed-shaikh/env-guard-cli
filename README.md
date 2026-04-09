@@ -1,18 +1,20 @@
 # env-guard-cli
 
-![Python](https://img.shields.io/badge/python-3.8%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
+![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?style=flat&logo=python&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat)
+![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey?style=flat)
+![CLI](https://img.shields.io/badge/Tool-CLI-orange?style=flat)
+![Security](https://img.shields.io/badge/Focus-Security-red?style=flat)
 
-**Catch exposed `.env` files before they reach GitHub.**
-
-`env-guard-cli` recursively scans your project for `.env` files that aren't covered by any `.gitignore`, a simple security check that takes seconds and can save you from a very bad day.
+Catch exposed `.env` files before they reach GitHub.
 
 ---
 
 ## The Problem
 
 You create `.env.local`, `.env.staging`, or `.env.test` during development and forget to add them to `.gitignore`. One `git push` later, your API keys are public. This tool exists to prevent exactly that.
+
+It scans your project recursively, checks every `.env` file against the nearest `.gitignore`, and tells you exactly what is protected and what is not.
 
 ---
 
@@ -48,7 +50,7 @@ env-guard --strict
 env-guard --version
 ```
 
-### Output
+### Sample Output
 
 ```
 🔍 Scanning: /home/user/myproject
@@ -64,40 +66,41 @@ env-guard --version
 
 ---
 
-## CI Integration
-
-Drop this into any GitHub Actions workflow to block pushes with exposed secrets:
+## Drop it into CI
 
 ```yaml
 - name: Check for exposed .env files
   run: env-guard --strict
 ```
 
-Exit code `0` = all clear. Exit code `1` = exposed files found (only with `--strict`).
+Exit code `0` means all clear. Exit code `1` means something is exposed (only triggered with `--strict`).
 
 ---
 
 ## How It Works
 
-1. Walks the target directory recursively, skipping `.git`, `node_modules`, `.venv`, `__pycache__`
-2. Collects all `.env` and `.env.*` files
-3. For each file, walks up the directory tree looking for a `.gitignore`
-4. Checks if the file matches any pattern in that `.gitignore`
-5. Reports what's protected and what's exposed
+The scanner walks your directory tree and for each `.env` file found, it climbs up the folder hierarchy looking for a `.gitignore`. It then checks whether the file matches any pattern in that file.
 
-Patterns supported: exact names (`.env`), prefix wildcards (`.env*`), suffix wildcards (`*.env`), and relative paths.
+Supported pattern types:
+
+- Exact match: `.env`
+- Prefix wildcard: `.env*`
+- Suffix wildcard: `*.env`
+- Relative path: `config/.env`
+
+Skipped directories: `.git`, `node_modules`, `.venv`, `__pycache__`
 
 ---
 
-## What Gets Scanned
+## What Gets Detected
 
-| File | Detected |
-|------|----------|
-| `.env` | ✅ |
-| `.env.local` | ✅ |
-| `.env.staging` | ✅ |
-| `.env.test` | ✅ |
-| `config.py` | ❌ (not a .env file) |
+| File | Scanned |
+|------|---------|
+| `.env` | yes |
+| `.env.local` | yes |
+| `.env.staging` | yes |
+| `.env.test` | yes |
+| `config.py` | no |
 
 ---
 
@@ -107,4 +110,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Bug reports and PRs are welcome.
 
 ## License
 
-[MIT](LICENSE) - © 2026 Jishanahmed AR Shaikh
+[MIT](LICENSE) © 2026 Jishanahmed AR Shaikh
