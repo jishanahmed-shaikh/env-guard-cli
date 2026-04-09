@@ -6,7 +6,7 @@
 
 **Catch exposed `.env` files before they reach GitHub.**
 
-`env-guard-cli` recursively scans your project for `.env` files that aren't covered by any `.gitignore` — a simple security check that takes seconds and can save you from a very bad day.
+`env-guard-cli` recursively scans your project for `.env` files that aren't covered by any `.gitignore`, a simple security check that takes seconds and can save you from a very bad day.
 
 ---
 
@@ -107,4 +107,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Bug reports and PRs are welcome.
 
 ## License
 
-[MIT](LICENSE) — © 2026 Jishanahmed AR Shaikh
+[MIT](LICENSE) - © 2026 Jishanahmed AR Shaikh
