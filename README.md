@@ -2,7 +2,6 @@
 
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Tests](https://github.com/jishanahmed-shaikh/env-guard-cli/actions/workflows/ci.yml/badge.svg)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 
 **Catch exposed `.env` files before they reach GitHub.**
