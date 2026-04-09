@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>env-guard-cli</title>
+  <meta name="description" content="Scan directories for .env files accidentally not covered by .gitignore. A security pre-check before pushing to GitHub." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9fafb;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #dc2626;
+      --accent-light: #fef2f2;
+      --code-bg: #f3f4f6;
+      --radius: 10px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* NAV */
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .nav-links { display: flex; gap: 1.5rem; font-size: 0.875rem; color: var(--muted); }
+    .nav-links a { color: var(--muted); }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    /* HERO */
+    .hero {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 5rem 2rem 3rem;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .hero p {
+      font-size: 1.125rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 2rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.85; text-decoration: none; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-outline { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+
+    /* INSTALL */
+    .install-block {
+      max-width: 560px;
+      margin: 0 auto 4rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .install-header {
+      padding: 0.5rem 1rem;
+      background: var(--code-bg);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .copy-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-family: 'Inter', sans-serif;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .copy-btn:hover { background: var(--border); color: var(--text); }
+    .install-cmd {
+      padding: 1rem 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .install-cmd span { color: var(--accent); }
+
+    /* FEATURES */
+    .section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .section h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 2.5rem;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .card-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .card p { font-size: 0.875rem; color: var(--muted); }
+
+    /* USAGE */
+    .usage-block {
+      background: #1e1e2e;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+    .usage-bar {
+      background: #2a2a3e;
+      padding: 0.5rem 1rem;
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ff5f57; }
+    .dot-yellow { background: #febc2e; }
+    .dot-green { background: #28c840; }
+    .usage-code {
+      padding: 1.25rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: #cdd6f4;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .c-green { color: #a6e3a1; }
+    .c-yellow { color: #f9e2af; }
+    .c-red { color: #f38ba8; }
+    .c-muted { color: #6c7086; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <span class="nav-brand">env-guard-cli</span>
+    <div class="nav-links">
+      <a href="#usage">Usage</a>
+      <a href="#features">Features</a>
+      <a href="https://github.com/jishanahmed-shaikh/env-guard-cli" target="_blank">GitHub</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="badge">Security Tool</div>
+    <h1>env-guard-cli</h1>
+    <p>Catch exposed <code>.env</code> files before they reach GitHub. Scan your project, check every <code>.gitignore</code>, and know exactly what is protected.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://github.com/jishanahmed-shaikh/env-guard-cli" target="_blank">View on GitHub</a>
+      <a class="btn btn-outline" href="#usage">See Usage</a>
+    </div>
+  </section>
+
+  <div class="install-block">
+    <div class="install-header">
+      <span>terminal</span>
+      <button class="copy-btn" onclick="copyInstall()">copy</button>
+    </div>
+    <div class="install-cmd" id="install-cmd">
+      <span>$</span> pip install env-guard-cli
+    </div>
+  </div>
+
+  <section class="section" id="features">
+    <div class="section-label">Why use it</div>
+    <h2>What it covers</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h3>Recursive Scan</h3>
+        <p>Walks your entire project tree, skipping <code>.git</code>, <code>node_modules</code>, and <code>.venv</code> automatically.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <h3>Pattern Matching</h3>
+        <p>Supports exact names, prefix wildcards like <code>.env*</code>, suffix wildcards, and relative paths.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚙️</div>
+        <h3>CI Ready</h3>
+        <p>Use <code>--strict</code> to exit with code 1 on any exposed file. Drop it into any GitHub Actions workflow.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📦</div>
+        <h3>Zero Dependencies</h3>
+        <p>Pure Python standard library. No third-party packages required.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="usage">
+    <div class="section-label">How to use it</div>
+    <h2>Example output</h2>
+    <div class="usage-block">
+      <div class="usage-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="usage-code"><span class="c-muted">$ </span>env-guard /path/to/project
+
+<span class="c-muted">🔍 Scanning: /path/to/project</span>
+
+<span class="c-green">✅ Protected (1):</span>
+   /path/to/project/.env
+
+<span class="c-red">⚠️  EXPOSED (1) — not in any .gitignore:</span>
+   /path/to/project/.env.local
+
+<span class="c-yellow">  Add these to your .gitignore to prevent accidental commits.</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Built by <a href="https://github.com/jishanahmed-shaikh" target="_blank">Jishanahmed AR Shaikh</a> &nbsp;·&nbsp; <a href="https://github.com/jishanahmed-shaikh/env-guard-cli" target="_blank">Source on GitHub</a> &nbsp;·&nbsp; MIT License</p>
+  </footer>
+
+  <script>
+    function copyInstall() {
+      navigator.clipboard.writeText('pip install env-guard-cli');
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 2000);
+    }
+  </script>
+
+</body>
+</html>
