@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "env-guard-cli"
+version = "1.0.0"
+description = "Scan directories for .env files accidentally not covered by .gitignore"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Jishanahmed AR Shaikh", email = "jishanahmedshaikh@gmail.com" }]
+keywords = ["security", "dotenv", "gitignore", "cli", "devtools"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.8"
+dependencies = []
+
+[project.scripts]
+env-guard = "env_guard.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/jishanahmed-shaikh/env-guard-cli"
+Issues = "https://github.com/jishanahmed-shaikh/env-guard-cli/issues"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
